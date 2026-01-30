@@ -42,9 +42,9 @@ MonoBehaviour:
   - type: 9
     baseValue: 10
   - type: 23
-    baseValue: 10
+    baseValue: 1
   - type: 24
-    baseValue: 10
+    baseValue: 0.1
   - type: 25
     baseValue: 3
   - type: 26

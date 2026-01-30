@@ -1,5 +1,5 @@
-using System;
 using HolenderGames.StatSystem;
+using System;
 using UnityEngine;
 
 public class GrassCutterSystem : MonoBehaviour
@@ -72,7 +72,7 @@ public class GrassCutterSystem : MonoBehaviour
             center,
             radius,
             overlapBuffer,
-            spawner.GrassMask,
+            spawner.CuttableMask,
             QueryTriggerInteraction.Ignore
         );
 
@@ -86,18 +86,28 @@ public class GrassCutterSystem : MonoBehaviour
         for (int i = 0; i < hitCount; i++)
         {
             Collider c = overlapBuffer[i];
-            if (!c)
-                continue;
-
-            GrassPatch patch = c.GetComponent<GrassPatch>() ?? c.GetComponentInParent<GrassPatch>();
-            if (!patch)
-                continue;
+            if (!c) continue;
 
             float dmg = baseDmg;
             if (critChance > 0f && UnityEngine.Random.value < critChance)
                 dmg *= critMult;
 
-            patch.ApplyDamage(dmg);
+            // Try grass first
+            GrassPatch patch = c.GetComponent<GrassPatch>() ?? c.GetComponentInParent<GrassPatch>();
+            if (patch != null)
+            {
+                patch.ApplyDamage(dmg);
+                continue;
+            }
+
+
+            ExplosivePatch explosive = c.GetComponent<ExplosivePatch>() ?? c.GetComponentInParent<ExplosivePatch>();
+            if (explosive != null)
+            {
+                explosive.ApplyDamage(dmg);
+                continue;
+            }
         }
+
     }
 }

@@ -1,6 +1,6 @@
-using System.Collections.Generic;
 using HolenderGames.Currencies;
 using HolenderGames.StatSystem;
+using System.Collections.Generic;
 using UnityEngine;
 public class GrassSpawner : MonoBehaviour
 {
@@ -23,6 +23,23 @@ public class GrassSpawner : MonoBehaviour
     [SerializeField] private StatType statTargetPopulationPerCutPerSecond;
     [SerializeField] private StatType statPressureWindowSeconds;
 
+    [SerializeField] private ExplosivePatch explosivePrefab;
+    [SerializeField] private LayerMask explosiveLayerMask;
+    private readonly List<ExplosivePatch> aliveExplosives = new(64);
+    private readonly Queue<ExplosivePatch> explosivePool = new(64);
+
+
+    [Header("Explosive Stat Keys")]
+    [SerializeField] private StatType statExplosiveHP;              // base 6
+    [SerializeField] private StatType statExplosiveSpawnChance;     // base 0.10
+    [SerializeField] private StatType statExplosiveBurnRadius;      // AOE range
+    [SerializeField] private StatType statExplosiveBurnDamage;      // grassBurnDmg
+
+
+    private Collider[] aoeBuffer = new Collider[256];
+
+    public LayerMask CuttableMask => grassLayerMask;
+
     private readonly List<GrassPatch> alive = new(512);
     private readonly Queue<GrassPatch> pool = new(512);
     private readonly Queue<float> cutTimestamps = new(256);
@@ -30,20 +47,24 @@ public class GrassSpawner : MonoBehaviour
     private bool running;
     private float spawnBudget;
 
-    public int AliveCount => alive.Count;
+    public int AliveCount => alive.Count + aliveExplosives.Count;
     public LayerMask GrassMask => grassLayerMask;
-
     public void ResetSpawner()
     {
         Stop();
 
         for (int i = alive.Count - 1; i >= 0; i--)
             Despawn(alive[i]);
-
         alive.Clear();
+
+        for (int i = aliveExplosives.Count - 1; i >= 0; i--)
+            DespawnExplosive(aliveExplosives[i]);
+        aliveExplosives.Clear();
+
         cutTimestamps.Clear();
         spawnBudget = 0f;
     }
+
 
     public void SpawnInitial()
     {
@@ -89,8 +110,9 @@ public class GrassSpawner : MonoBehaviour
         );
 
         float respawnRate = GetBaseRespawnRate() + GetRespawnRatePerCps() * cps;
+        int totalAlive = alive.Count + aliveExplosives.Count;
 
-        if (alive.Count < target && alive.Count < maxPatches)
+        if (totalAlive < target && totalAlive < maxPatches)
         {
             spawnBudget += respawnRate * Time.deltaTime;
 
@@ -101,7 +123,7 @@ public class GrassSpawner : MonoBehaviour
 
                 for (int i = 0; i < toSpawn; i++)
                 {
-                    if (alive.Count >= target || alive.Count >= maxPatches)
+                    if (totalAlive >= target || totalAlive >= maxPatches)
                         break;
                     if (!TrySpawnOne())
                         break;
@@ -131,10 +153,50 @@ public class GrassSpawner : MonoBehaviour
         return cutTimestamps.Count / window;
     }
 
+    //private bool TrySpawnOne()
+    //{
+    //    if (!TryGetSpawnPosition(out Vector3 pos))
+    //        return false;
+
+    //    GrassPatch patch = (pool.Count > 0)
+    //        ? pool.Dequeue()
+    //        : Instantiate(grassPrefab, spawnedParent ? spawnedParent : transform);
+
+    //    patch.transform.position = pos;
+
+    //    patch.Cut -= OnGrassPatchCut;
+    //    patch.Cut += OnGrassPatchCut;
+
+    //    patch.Initialize(GetStartingGrassHP());
+
+    //    alive.Add(patch);
+    //    return true;
+    //}
     private bool TrySpawnOne()
     {
         if (!TryGetSpawnPosition(out Vector3 pos))
             return false;
+
+        bool spawnExplosive =
+            explosivePrefab != null &&
+            Random.value < Mathf.Clamp01(GS(statExplosiveSpawnChance));
+
+        if (spawnExplosive)
+        {
+            ExplosivePatch explosive = (explosivePool.Count > 0)
+                ? explosivePool.Dequeue()
+                : Instantiate(explosivePrefab, spawnedParent ? spawnedParent : transform);
+
+            explosive.transform.position = pos; // IMPORTANT
+
+            explosive.Exploded -= OnExplosiveDetonated;
+            explosive.Exploded += OnExplosiveDetonated;
+
+            explosive.Initialize(Mathf.Max(0.01f, GS(statExplosiveHP)));
+
+            aliveExplosives.Add(explosive);
+            return true;
+        }
 
         GrassPatch patch = (pool.Count > 0)
             ? pool.Dequeue()
@@ -150,7 +212,6 @@ public class GrassSpawner : MonoBehaviour
         alive.Add(patch);
         return true;
     }
-
     private void OnGrassPatchCut(GrassPatch patch)
     {
         NotifyGrassCut();
@@ -158,6 +219,53 @@ public class GrassSpawner : MonoBehaviour
         Despawn(patch);
         alive.Remove(patch);
     }
+    private void OnExplosiveDetonated(ExplosivePatch explosive)
+    {
+        BurnNearbyGrass(explosive.transform.position);
+        CurrencyManager.Instance.AddCurrency(CurrencyType.Gold, 1);
+        DespawnExplosive(explosive);
+        aliveExplosives.Remove(explosive);
+    }
+
+
+    private void BurnNearbyGrass(Vector3 center)
+    {
+        float radius = Mathf.Max(0f, GS(statExplosiveBurnRadius));
+        float burnDmg = Mathf.Max(0f, GS(statExplosiveBurnDamage));
+        if (radius <= 0f || burnDmg <= 0f) return;
+
+        int hitCount = Physics.OverlapSphereNonAlloc(
+            center, radius, aoeBuffer, grassLayerMask, QueryTriggerInteraction.Ignore
+        );
+
+        for (int i = 0; i < hitCount; i++)
+        {
+            Collider c = aoeBuffer[i];
+            if (!c) continue;
+
+            GrassPatch grass = c.GetComponent<GrassPatch>() ?? c.GetComponentInParent<GrassPatch>();
+            if (!grass) continue;
+
+            grass.ApplyDamage(burnDmg);
+        }
+    }
+
+    //private void DespawnExplosive(ExplosivePatch explosive)
+    //{
+    //    explosive.Exploded -= OnExplosiveDetonated;
+    //    explosive.gameObject.SetActive(false);
+    //    explosivePool.Enqueue(explosive);
+    //}
+
+
+    private void DespawnExplosive(ExplosivePatch explosive)
+    {
+        if (!explosive) return;
+        explosive.Exploded -= OnExplosiveDetonated;
+        explosive.gameObject.SetActive(false);
+        explosivePool.Enqueue(explosive);
+    }
+
     public void SetConfig(GrassGameConfig cfg) => config = cfg;
 
     private void Despawn(GrassPatch patch)
@@ -184,7 +292,7 @@ public class GrassSpawner : MonoBehaviour
             if (r <= 0f)
                 return true;
 
-            Collider[] hits = Physics.OverlapSphere(pos, r, grassLayerMask, QueryTriggerInteraction.Ignore);
+            Collider[] hits = Physics.OverlapSphere(pos, r, CuttableMask, QueryTriggerInteraction.Ignore);
             if (hits == null || hits.Length == 0)
                 return true;
         }

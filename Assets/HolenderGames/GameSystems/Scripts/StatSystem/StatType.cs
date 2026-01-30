@@ -31,10 +31,10 @@ namespace HolenderGames.StatSystem
         SpawnerBaseTargetPopulation,
         SpawnerTargetPopulationPerCut,
         SpawnerPressureWindowSeconds,
-        Barrel_HP,
-        Barrel_SpawnChance,
-        Barrel_BurnDamage,
-        Barrel_BurnRadius
+        Explosive_HP,
+        Explosive_SpawnChance,
+        Explosive_BurnDamage,
+        Explosive_BurnRadius
     }
 
 }
