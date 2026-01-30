@@ -1,0 +1,79 @@
+# --- Unity core ---
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+*.log
+sysinfo.txt
+mono_crash.*
+
+# --- IDEs / solutions ---
+.vs/
+.vscode/
+.idea/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# JetBrains Rider plugin and per-user settings
+/[Aa]ssets/Plugins/Editor/JetBrains*
+*.DotSettings.user
+
+# --- Gradle/Android ---
+.gradle/
+*.apk
+*.aab
+# Sensitive keystores (do not commit)
+*.keystore
+*.jks
+
+# --- Unity packages & exports ---
+*.unitypackage
+*.unitypackage.meta
+*.meta
+# --- Crash/diagnostics ---
+*.dmp
+*.stacktrace
+
+# --- Test Runner / Auto-generated test scenes ---
+InitTestScene*.unity*
+/[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+
+# --- Addressables (build outputs) ---
+/[Ss]erver[Dd]ata/
+/[Aa]ssets/StreamingAssets/aa/*
+/[Aa]ssets/AddressableAssetsData/*/*.bin*
+/[Aa]ssets/AddressableAssetsData/link.xml*
+/[Aa]ssets/Addressables_Temp*
+
+# --- Visual Scripting auto-generated ---
+/[Aa]ssets/Unity.VisualScripting.Generated/VisualScripting.Flow/UnitOptions.db
+/[Aa]ssets/Unity.VisualScripting.Generated/VisualScripting.Flow/UnitOptions.db.meta
+/[Aa]ssets/Unity.VisualScripting.Generated/VisualScripting.Core/Property Providers
+/[Aa]ssets/Unity.VisualScripting.Generated/VisualScripting.Core/Property Providers.meta
+
+# --- Memory & Recorder captures ---
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+
+# --- Blender byproducts (not needed in VCS) ---
+*.blend1
+*.blend1.meta
+
+# --- OS junk ---
+.DS_Store
+Thumbs.db

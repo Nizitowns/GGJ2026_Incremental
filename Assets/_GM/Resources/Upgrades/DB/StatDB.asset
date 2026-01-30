@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d36547c4a8f67a42a3d8403467cfb44, type: 3}
+  m_Name: StatDB
+  m_EditorClassIdentifier: Assembly-CSharp::HolenderGames.StatSystem.StatDB
+  BaseStats:
+  - type: 10
+    baseValue: 1
+  - type: 11
+    baseValue: 1
+  - type: 12
+    baseValue: 0.5
+  - type: 13
+    baseValue: 0.5
+  - type: 14
+    baseValue: 0.1
+  - type: 15
+    baseValue: 3
+  - type: 16
+    baseValue: 3
+  - type: 17
+    baseValue: 20
+  - type: 18
+    baseValue: 200
+  - type: 19
+    baseValue: 1.5
+  - type: 20
+    baseValue: 0.75
+  - type: 21
+    baseValue: 35
+  - type: 22
+    baseValue: 8
+  - type: 9
+    baseValue: 10
+  - type: 23
+    baseValue: 10
+  - type: 24
+    baseValue: 10
+  - type: 25
+    baseValue: 3
+  - type: 26
+    baseValue: 10

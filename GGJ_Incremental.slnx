@@ -1,0 +1,10 @@
+﻿<Solution>
+  <Project Path="Assembly-CSharp.csproj" />
+  <Project Path="VRuler.csproj" />
+  <Project Path="VHierarchy.csproj" />
+  <Project Path="VInspector.csproj" />
+  <Project Path="Assembly-CSharp-firstpass.csproj" />
+  <Project Path="VFolders.csproj" />
+  <Project Path="VTabs.csproj" />
+  <Project Path="VFavorites.csproj" />
+</Solution>
