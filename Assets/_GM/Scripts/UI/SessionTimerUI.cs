@@ -11,7 +11,8 @@ public class SessionTimerUI : MonoBehaviour
     [Header("Upgrade Button")]
     [SerializeField] private Button upgradeButton;     // enable this on session end
     [SerializeField] private bool hideButtonUntilEnd = true;
-
+    [Header("Restart Button")]
+    [SerializeField] private Button restartButton;     // enable this on session end
     [Header("Optional: Upgrade Panel")]
     [SerializeField] private GameObject upgradePanel;  // set active on session end (optional)
 
@@ -81,7 +82,12 @@ public class SessionTimerUI : MonoBehaviour
             SessionEndGo.gameObject.SetActive(true);
             SessionEndSummary.text = "Session End";
         }
+        if (restartButton != null)
+        {
+            restartButton.gameObject.SetActive(true);
+            restartButton.interactable = true;
 
+        }
         // optional panel
         if (upgradePanel != null)
             upgradePanel.SetActive(true);
