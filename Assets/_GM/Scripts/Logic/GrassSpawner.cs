@@ -1,4 +1,4 @@
-using HolenderGames.Currencies;
+﻿using HolenderGames.Currencies;
 using HolenderGames.StatSystem;
 using System.Collections.Generic;
 using UnityEngine;
@@ -35,6 +35,20 @@ public class GrassSpawner : MonoBehaviour
     [SerializeField] private StatType statExplosiveBurnRadius;      // AOE range
     [SerializeField] private StatType statExplosiveBurnDamage;      // grassBurnDmg
 
+    [Header("Electric Grass Stat Keys")]
+    [SerializeField] private StatType statElectricSpawnChance;
+    [SerializeField] private StatType statElectricDamage;
+    [SerializeField] private StatType statElectricChains;
+
+    // optional but recommended
+    [SerializeField] private StatType statElectricChainRange;
+
+    [Header("Lightning Visual")]
+    [SerializeField] private Material lightningMaterial;
+    [SerializeField] private float lightningWidth = 0.08f;
+    [SerializeField] private float lightningLifetime = 0.12f;
+
+    private readonly HashSet<GrassPatch> chainVisited = new();
 
     private Collider[] aoeBuffer = new Collider[256];
 
@@ -46,6 +60,7 @@ public class GrassSpawner : MonoBehaviour
 
     private bool running;
     private float spawnBudget;
+    private readonly HashSet<GrassPatch> zapped = new();
 
     public int AliveCount => alive.Count + aliveExplosives.Count;
     public LayerMask GrassMask => grassLayerMask;
@@ -123,8 +138,10 @@ public class GrassSpawner : MonoBehaviour
 
                 for (int i = 0; i < toSpawn; i++)
                 {
-                    if (totalAlive >= target || totalAlive >= maxPatches)
+                    int totalAliveNow = alive.Count + aliveExplosives.Count;
+                    if (totalAliveNow >= target || totalAliveNow >= maxPatches)
                         break;
+
                     if (!TrySpawnOne())
                         break;
                 }
@@ -208,17 +225,126 @@ public class GrassSpawner : MonoBehaviour
         patch.Cut += OnGrassPatchCut;
 
         patch.Initialize(GetStartingGrassHP());
+        bool isElectric = Random.value < Mathf.Clamp01(GS(statElectricSpawnChance));
+
+        patch.SetElectric(isElectric);
 
         alive.Add(patch);
         return true;
     }
+    //private void OnGrassPatchCut(GrassPatch patch)
+    //{
+    //    NotifyGrassCut();
+    //    CurrencyManager.Instance.AddCurrency(CurrencyType.Gold, 1);
+
+    //    // ⚡ trigger chain lightning BEFORE despawn
+    //    if (patch.IsElectric)
+    //        TriggerChainLightning(patch);
+
+    //    Despawn(patch);
+    //    alive.Remove(patch);
+    //}
+
     private void OnGrassPatchCut(GrassPatch patch)
     {
-        NotifyGrassCut();
-        CurrencyManager.Instance.AddCurrency(CurrencyType.Gold, 1);
+        bool wasZapped = zapped.Remove(patch);
+
+        if (!wasZapped)
+        {
+            NotifyGrassCut();
+            CurrencyManager.Instance.AddCurrency(CurrencyType.Gold, 1);
+
+            if (patch.IsElectric)
+                TriggerChainLightning(patch);
+        }
+
         Despawn(patch);
         alive.Remove(patch);
     }
+
+    private void TriggerChainLightning(GrassPatch source)
+    {
+        int chains = Mathf.Max(0, Mathf.RoundToInt(GS(statElectricChains)));
+        if (chains <= 0) return;
+
+        float dmg = Mathf.Max(0f, GS(statElectricDamage));
+        if (dmg <= 0f) return;
+
+        float range = 9999f;
+        if (statElectricChainRange != 0)
+            range = Mathf.Max(0.01f, GS(statElectricChainRange));
+
+        // Pick targets first (so the alive list changing from kills won’t break selection)
+        chainVisited.Clear();
+        chainVisited.Add(source);
+
+        var from = source;
+        var targets = new List<GrassPatch>(chains);
+
+        for (int step = 0; step < chains; step++)
+        {
+            GrassPatch next = FindClosestGrass(from.transform.position, range);
+            if (next == null) break;
+
+            chainVisited.Add(next);
+            targets.Add(next);
+            from = next;
+        }
+
+        // Apply damage + draw lines
+        Vector3 a = source.transform.position;
+        for (int i = 0; i < targets.Count; i++)
+        {
+            GrassPatch t = targets[i];
+            if (!t || !t.gameObject.activeInHierarchy) break;
+
+            Vector3 b = t.transform.position;
+            SpawnLightningLine(a, b);
+            zapped.Add(t);
+            t.ApplyDamage(dmg);
+            a = b;
+        }
+    }
+    private void SpawnLightningLine(Vector3 a, Vector3 b)
+    {
+        var go = new GameObject("LightningLine");
+        go.transform.SetParent(spawnedParent ? spawnedParent : transform);
+
+        var lr = go.AddComponent<LineRenderer>();
+        lr.positionCount = 2;
+        lr.SetPosition(0, a + Vector3.up * 0.1f);
+        lr.SetPosition(1, b + Vector3.up * 0.1f);
+
+        lr.startWidth = lightningWidth;
+        lr.endWidth = lightningWidth;
+        lr.material = lightningMaterial;
+        lr.useWorldSpace = true;
+
+        Destroy(go, lightningLifetime);
+    }
+
+    private GrassPatch FindClosestGrass(Vector3 from, float range)
+    {
+        float bestDistSq = range * range;
+        GrassPatch best = null;
+
+        for (int i = 0; i < alive.Count; i++)
+        {
+            GrassPatch p = alive[i];
+            if (!p || !p.gameObject.activeInHierarchy) continue;
+            if (chainVisited.Contains(p)) continue;
+
+            float dSq = (p.transform.position - from).sqrMagnitude;
+            if (dSq < bestDistSq)
+            {
+                bestDistSq = dSq;
+                best = p;
+            }
+        }
+
+        return best;
+    }
+
     private void OnExplosiveDetonated(ExplosivePatch explosive)
     {
         BurnNearbyGrass(explosive.transform.position);

@@ -49,3 +49,17 @@ MonoBehaviour:
     baseValue: 3
   - type: 26
     baseValue: 10
+  - type: 27
+    baseValue: 0.1
+  - type: 28
+    baseValue: 2
+  - type: 29
+    baseValue: 2
+  - type: 30
+    baseValue: 9
+  - type: 31
+    baseValue: 9
+  - type: 32
+    baseValue: 0.5
+  - type: 33
+    baseValue: 3

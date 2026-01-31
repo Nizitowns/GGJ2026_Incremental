@@ -1,4 +1,3 @@
-
 namespace HolenderGames.StatSystem
 {
     /// <summary>
@@ -12,7 +11,6 @@ namespace HolenderGames.StatSystem
         Wizard_Shields,
         Wizard_Health,
         Magician_Damage,
-
         Magician_Shields,
         Magician_Health,
         UnlockMagician,
@@ -34,7 +32,14 @@ namespace HolenderGames.StatSystem
         Explosive_HP,
         Explosive_SpawnChance,
         Explosive_BurnDamage,
-        Explosive_BurnRadius
+        Explosive_BurnRadius,
+        statElectricSpawnChance,
+        statElectricDamage,
+        statElectricChains,
+        statElectricChainRange,
+        statBeamWidth,
+        statBeamSpawnChance,
+        statBeamDamage
     }
 
 }
