@@ -1,9 +1,15 @@
-﻿using HolenderGames.Currencies;
+﻿using DamageNumbersPro;
+using HolenderGames.Currencies;
 using HolenderGames.StatSystem;
 using System.Collections.Generic;
 using UnityEngine;
 public class GrassSpawner : MonoBehaviour
 {
+    [Header("Damage Numbers Pro (GUI)")]
+    [SerializeField] private DamageNumber damageNumberGuiPrefab;
+    [SerializeField] private RectTransform damageNumbersRoot; // under your Canvas
+    [SerializeField] private Camera worldCamera;              // usually Camera.main
+    [SerializeField] private float damageNumberYOffset = 0.2f;
     [Header("Prefab / Layers")]
     [SerializeField] private GrassPatch grassPrefab;
     [SerializeField] private LayerMask grassLayerMask;
@@ -236,7 +242,8 @@ public class GrassSpawner : MonoBehaviour
 
         patch.Cut -= OnGrassPatchCut;
         patch.Cut += OnGrassPatchCut;
-
+        patch.Damaged -= OnGrassPatchDamaged;
+        patch.Damaged += OnGrassPatchDamaged;
         patch.Initialize(GetStartingGrassHP());
 
         bool isElectric = Random.value < Mathf.Clamp01(GS(statElectricSpawnChance));
@@ -597,6 +604,7 @@ public class GrassSpawner : MonoBehaviour
         if (!patch)
             return;
         patch.Cut -= OnGrassPatchCut;
+        patch.Damaged -= OnGrassPatchDamaged;
         patch.gameObject.SetActive(false);
         pool.Enqueue(patch);
     }
@@ -624,6 +632,26 @@ public class GrassSpawner : MonoBehaviour
         pos = default;
         return false;
     }
+
+    private void OnGrassPatchDamaged(GrassPatch patch, float dmg)
+    {
+        if (damageNumberGuiPrefab == null || damageNumbersRoot == null) return;
+        if (worldCamera == null) worldCamera = Camera.main;
+
+        Vector3 worldPos = patch.transform.position + Vector3.up * damageNumberYOffset;
+
+        Vector2 screen = RectTransformUtility.WorldToScreenPoint(worldCamera, worldPos);
+
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            damageNumbersRoot,
+            screen,
+            null, // Screen Space Overlay canvas => null
+            out Vector2 anchoredPos
+        );
+
+        damageNumberGuiPrefab.SpawnGUI(damageNumbersRoot, anchoredPos, dmg);
+    }
+
 
     // ---- Stat helpers (via GameData) ----
     private float GS(StatType t) => GameData.Instance.GetStat(t);

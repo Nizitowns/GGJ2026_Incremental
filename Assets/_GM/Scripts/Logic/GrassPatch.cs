@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider))]
@@ -15,8 +15,9 @@ public class GrassPatch : MonoBehaviour
     [Header("Electric")]
     [SerializeField] private GameObject electricVfx; // child GO (glow/particles), optional
     public bool IsElectric { get; private set; }
-    [SerializeField] private GameObject beamVfx; // optional child for �beam grass� look
+    [SerializeField] private GameObject beamVfx; // optional child for “beam grass” look
     public bool IsBeam { get; private set; }
+    public event Action<GrassPatch, float> Damaged; // ✅ add this
     public void Initialize(float hp)
     {
         maxHP = Mathf.Max(0.01f, hp);
@@ -43,8 +44,12 @@ public class GrassPatch : MonoBehaviour
         if (!gameObject.activeInHierarchy)
             return;
 
-        HP -= Mathf.Max(0f, dmg);
+        float applied = Mathf.Max(0f, dmg);
+        if (applied <= 0f) return;
 
+        HP -= applied;
+        // HP -= Mathf.Max(0f, dmg);
+        Damaged?.Invoke(this, applied); // ✅ fire numbers every time
         if (HP <= 0f)
         {
             HP = 0f;

@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: UpgradeData_Breaker_Critical_Chance_Short
   m_EditorClassIdentifier: Assembly-CSharp::HolenderGames.UpgradesTreePro.UpgradeData
   UpgradeName: Breaker Critical Damage Chance
-  Icon: {fileID: -1443889011651946179, guid: 79d73c8dc176eaa45a64e80accbe7654, type: 3}
+  Icon: {fileID: 8890533060992490834, guid: 79d73c8dc176eaa45a64e80accbe7654, type: 3}
   CurrencyType: 0
   UnlockWhenParentMaxed: 1
   UnlockAtParentLevel: 1
-  ParentUpgrade: {fileID: 11400000, guid: d0bd9c99514f4d248b48099ace81d76b, type: 2}
+  ParentUpgrade: {fileID: 0}
   LevelsData:
   - Description: Increase Breaker Critical Damage Chance
     Cost: 20

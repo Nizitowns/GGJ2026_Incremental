@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: UpgradeData_Breaker_Damage_Short
   m_EditorClassIdentifier: Assembly-CSharp::HolenderGames.UpgradesTreePro.UpgradeData
   UpgradeName: Breaker Damage
-  Icon: {fileID: -1443889011651946179, guid: 79d73c8dc176eaa45a64e80accbe7654, type: 3}
+  Icon: {fileID: -5166432130525955749, guid: 79d73c8dc176eaa45a64e80accbe7654, type: 3}
   CurrencyType: 0
   UnlockWhenParentMaxed: 1
   UnlockAtParentLevel: 1

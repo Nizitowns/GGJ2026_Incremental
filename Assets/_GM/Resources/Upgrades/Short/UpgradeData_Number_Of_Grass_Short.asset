@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: UpgradeData_Number_Of_Grass_Short
   m_EditorClassIdentifier: Assembly-CSharp::HolenderGames.UpgradesTreePro.UpgradeData
   UpgradeName: Number of Grass Patches
-  Icon: {fileID: -1443889011651946179, guid: 79d73c8dc176eaa45a64e80accbe7654, type: 3}
+  Icon: {fileID: 1921378318177413420, guid: 79d73c8dc176eaa45a64e80accbe7654, type: 3}
   CurrencyType: 0
   UnlockWhenParentMaxed: 1
   UnlockAtParentLevel: 1

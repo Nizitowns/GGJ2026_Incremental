@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: UpgradeData_Electric_Spawn_Short
   m_EditorClassIdentifier: Assembly-CSharp::HolenderGames.UpgradesTreePro.UpgradeData
   UpgradeName: Chance To Spawn Electric
-  Icon: {fileID: -1443889011651946179, guid: 79d73c8dc176eaa45a64e80accbe7654, type: 3}
+  Icon: {fileID: 1197287037935432574, guid: 79d73c8dc176eaa45a64e80accbe7654, type: 3}
   CurrencyType: 0
   UnlockWhenParentMaxed: 1
   UnlockAtParentLevel: 1

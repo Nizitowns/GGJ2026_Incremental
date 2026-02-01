@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: UpgradeData_Breaker_Speed_Short
   m_EditorClassIdentifier: Assembly-CSharp::HolenderGames.UpgradesTreePro.UpgradeData
   UpgradeName: Breaker Speed
-  Icon: {fileID: -1443889011651946179, guid: 79d73c8dc176eaa45a64e80accbe7654, type: 3}
+  Icon: {fileID: -2458848620916336182, guid: 79d73c8dc176eaa45a64e80accbe7654, type: 3}
   CurrencyType: 0
   UnlockWhenParentMaxed: 1
   UnlockAtParentLevel: 1
-  ParentUpgrade: {fileID: 11400000, guid: d0bd9c99514f4d248b48099ace81d76b, type: 2}
+  ParentUpgrade: {fileID: 0}
   LevelsData:
   - Description: Increase Breaker Speed
     Cost: 30
