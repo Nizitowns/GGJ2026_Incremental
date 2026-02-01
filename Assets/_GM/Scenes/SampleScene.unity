@@ -7484,8 +7484,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a115ba4355e034443a041cf7a0e48154, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GrassSpawner
-  damageNumberGuiPrefab: {fileID: 4475507714914514297}
-  damageNumbersRoot: {fileID: 4475507714914514296}
+  damageNumberGuiPrefab: {fileID: 8785574615380414527, guid: 0a543548a4da22a4fa4c76fcaedb8134, type: 3}
+  damageNumbersRoot: {fileID: 1043116454}
   worldCamera: {fileID: 330585545}
   damageNumberYOffset: 0.2
   grassPrefab: {fileID: 1505386131}
@@ -17786,6 +17786,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Damage Number (GUI)
       objectReference: {fileID: 0}
+    - target: {fileID: 2827301677665639048, guid: 0a543548a4da22a4fa4c76fcaedb8134, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3852694360372841103, guid: 0a543548a4da22a4fa4c76fcaedb8134, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -17876,17 +17880,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 3852694360372841103, guid: 0a543548a4da22a4fa4c76fcaedb8134, type: 3}
   m_PrefabInstance: {fileID: 4475507714914514295}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &4475507714914514297 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8785574615380414527, guid: 0a543548a4da22a4fa4c76fcaedb8134, type: 3}
-  m_PrefabInstance: {fileID: 4475507714914514295}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 970bc0384e845f941a90f0d12b80b0c0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: DamageNumbersPro::DamageNumbersPro.DamageNumberGUI
 --- !u!1001 &8020099572670392959
 PrefabInstance:
   m_ObjectHideFlags: 0
